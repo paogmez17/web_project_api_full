@@ -1,0 +1,74 @@
+.card {
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  padding-bottom: 20px; /* deja espacio para el botón like */
+}
+
+.card__title {
+  background-color: white;
+  color: black;
+  font-family: "Inter-Regular", sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  line-height: 350%;
+  margin: 0;
+  padding-left: 21px;
+  padding-right: 32px;
+  border-radius: 5px;
+  position: relative;
+  height: 70px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.card__image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.card__like-button {
+  position: absolute;
+  top: 330px;
+  right: 6px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background-image: url("../images/Group.png");
+  width: 21px;
+  height: 19px;
+}
+
+.card__like-button--active {
+  background-image: url("../images/heartcolor.png");
+}
+
+.card__like-button:hover {
+  border: none;
+  border-radius: 30%;
+  background-color: #26262692;
+}
+
+.card__delete-button {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  position: absolute;
+  right: 15px;
+  top: 20px;
+  background-image: url("../images/Trash.svg");
+  background-size: contain;
+  background-color: transparent;
+  width: 21px;
+  height: 21px;
+}
+
+.card__delete-button:hover {
+  background-color: #fffbfb92;
+}

@@ -1,0 +1,19 @@
+# Logs de la app
+logs/
+*.log
+npm-debug.log*
+
+# Directorio de dependencias
+node_modules/
+
+# Cache opcional de npm
+.npm/
+
+# Archivos y carpetas de sistema / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Build (si en algún punto usas frontend o TS)
+dist/
+build/

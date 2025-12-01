@@ -1,0 +1,16 @@
+.footer__name {
+  color: gray;
+  padding-bottom: 60px;
+  padding-left: 173px;
+}
+
+@media screen and (min-width: 545px) and (max-width: 1024px) {
+  .footer__name {
+    padding-left: 106px;
+  }
+}
+@media screen and (min-width: 320px) and (max-width: 544px) {
+  .footer__name {
+    padding-left: 56px;
+  }
+}

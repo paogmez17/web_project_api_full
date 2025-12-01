@@ -1,0 +1,40 @@
+{
+  "name": "web_project_around_express",
+  "version": "1.0.0",
+  "description": "Proyecto 16",
+  "homepage": "https://github.com/paogmez17/web_project_around_express#readme",
+  "bugs": {
+    "url": "https://github.com/paogmez17/web_project_around_express/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paogmez17/web_project_around_express.git"
+  },
+  "license": "ISC",
+  "author": "Paola Gomez",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint .",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "celebrate": "^15.0.3",
+    "express": "^5.1.0",
+    "express-winston": "^4.2.0",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
+    "validator": "^13.15.23",
+    "winston": "^3.18.3"
+  }
+}
