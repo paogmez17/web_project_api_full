@@ -26,19 +26,12 @@ app.use(express.json());
 // ---------------- CORS ----------------
 app.use(
   cors({
-    origin: [
-      FRONTEND_URL, // frontend remoto
-      "http://localhost:3000", // pruebas locales antiguas
-      "http://localhost:30000", // Vite dev actual
-    ],
-    credentials: true, // para enviar cookies si las usas
-    allowedHeaders: ["Content-Type", "Authorization"], // necesario para JWT
+    origin: [FRONTEND_URL, "http://localhost:3000", "http://localhost:30000"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
-
-// Opciones preflight para todas las rutas
-app.options("*", cors());
 
 // ---------------- Logger de solicitudes ----------------
 app.use(requestLogger);
