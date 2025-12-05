@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
-import Header from "./Header/Header";
-import Main from "./Main/Main";
-import Footer from "./Footer/Footer";
-import api from "../utils/api";
-import * as auth from "../utils/auth";
-import CurrentUserContext from "../contexts/CurrentUserContext";
-import EditProfile from "./Main/components/Form/EditProfile/EditProfile";
-import EditAvatar from "./Main/components/Form/EditAvatar/EditAvatar";
-import NewCard from "./Main/components/Form/NewCard/NewCard";
+import Header from "./components/Header/Header";
+import Main from "./components/Main/Main";
+import Footer from "./components/Footer/Footer";
+import api from "./utils/api";
+import * as auth from "./utils/auth";
+import CurrentUserContext from "./contexts/CurrentUserContext";
+import EditProfile from "./components/Main/components/Form/EditProfile/EditProfile";
+import EditAvatar from "./components/Main/components/Form/EditAvatar/EditAvatar";
+import NewCard from "./components/Main/components/Form/NewCard/NewCard";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("jwt"));
   const [loggedIn, setLoggedIn] = useState(false);
+  const [checkingToken, setCheckingToken] = useState(true);
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [popup, setPopup] = useState(null);
@@ -21,16 +22,24 @@ function App() {
   // -------------------------
   useEffect(() => {
     const jwt = localStorage.getItem("jwt");
-    if (!jwt) return;
+    if (!jwt) {
+      setCheckingToken(false);
+      return;
+    }
 
     auth
       .checkToken(jwt)
       .then((userData) => {
-        setLoggedIn(true);
         setCurrentUser(userData);
+        setLoggedIn(true);
         loadInitialData();
       })
-      .catch((err) => console.log("Token inválido:", err.message || err));
+      .catch((err) => {
+        console.error("Token inválido:", err.message || err);
+        localStorage.removeItem("jwt");
+        setLoggedIn(false);
+      })
+      .finally(() => setCheckingToken(false));
   }, []);
 
   // -------------------------
@@ -120,7 +129,12 @@ function App() {
       <div className="page">
         <Header />
 
-        {loggedIn && (
+        {/* Mostrar carga mientras se valida token */}
+        {checkingToken ? (
+          <div style={{ textAlign: "center", padding: "2rem" }}>
+            Cargando...
+          </div>
+        ) : loggedIn ? (
           <Main
             cards={cards}
             onCardLike={handleCardLike}
@@ -130,6 +144,10 @@ function App() {
             popup={popup}
             popups={popups}
           />
+        ) : (
+          <div style={{ textAlign: "center", padding: "2rem" }}>
+            Por favor, inicia sesión para ver el contenido.
+          </div>
         )}
 
         <Footer />

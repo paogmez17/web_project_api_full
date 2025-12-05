@@ -1,36 +1,53 @@
+// backend/app.js
 const express = require("express");
 const mongoose = require("mongoose");
 const { errors } = require("celebrate");
+const cors = require("cors");
 
 const { login, createUser } = require("./controllers/users");
-
 const usersRouter = require("./routers/users");
 const cardsRouter = require("./routers/cards");
-
 const auth = require("./middlewares/auth");
-const errorHandler = require("./middlewares/errorHandler"); // Manejo centralizado
+const errorHandler = require("./middlewares/errorHandler");
 const {
   validateLogin,
   validateCreateUser,
-} = require("./middlewares/validation"); // Validación celebrate
-
-const { requestLogger, errorLogger } = require("./middlewares/logger"); // Logging
+} = require("./middlewares/validation");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/aroundb";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://34.121.100.25";
 
 // ---------------- Middleware JSON ----------------
 app.use(express.json());
 
-// ---------------- Logger de solicitudes (PASO 3) ----------------
+// ---------------- CORS ----------------
+app.use(
+  cors({
+    origin: [
+      FRONTEND_URL, // frontend remoto
+      "http://localhost:3000", // pruebas locales antiguas
+      "http://localhost:30000", // Vite dev actual
+    ],
+    credentials: true, // para enviar cookies si las usas
+    allowedHeaders: ["Content-Type", "Authorization"], // necesario para JWT
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  })
+);
+
+// Opciones preflight para todas las rutas
+app.options("*", cors());
+
+// ---------------- Logger de solicitudes ----------------
 app.use(requestLogger);
 
-// ---------------- Rutas públicas (sin token) ----------------
+// ---------------- Rutas públicas ----------------
 app.post("/signup", validateCreateUser, createUser);
 app.post("/signin", validateLogin, login);
 
 // ---------------- Middleware global de autorización ----------------
-// Todas las rutas siguientes requieren token
 app.use(auth);
 
 // ---------------- Rutas protegidas ----------------
@@ -42,10 +59,10 @@ app.use((req, res) => {
   res.status(404).json({ message: "Recurso solicitado no encontrado" });
 });
 
-// ---------------- Logger de errores (PASO 3) ----------------
+// ---------------- Logger de errores ----------------
 app.use(errorLogger);
 
-// ---------------- Errores de Celebrate ----------------
+// ---------------- Manejo de errores de Celebrate ----------------
 app.use(errors());
 
 // ---------------- Manejo centralizado de errores ----------------
@@ -53,14 +70,14 @@ app.use(errorHandler);
 
 // ---------------- Conexión a MongoDB ----------------
 mongoose
-  .connect("mongodb://127.0.0.1:27017/aroundb")
+  .connect(MONGO_URL)
   .then(() => {
-    console.log("Conectado a MongoDB");
+    console.log("✅ Conectado a MongoDB");
     app.listen(PORT, () => {
-      console.log(`Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     });
   })
   .catch((error) => {
-    console.error("Error al conectar a MongoDB:", error);
+    console.error("❌ Error al conectar a MongoDB:", error);
     process.exit(1);
   });
