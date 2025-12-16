@@ -1,5 +1,5 @@
 import React from "react";
-import Trash from "../../../../assets/Trash.svg";
+import Trash from "../../../../images/Trash.svg";
 
 export default function Card({ card, onCardClick, onCardDelete, onCardLike }) {
   const { name, link, isLiked } = card;
