@@ -1,12 +1,11 @@
-import Trash from "../../../../images/Trash.svg";
-import Heart from "../../../../images/group.png";
 import React from "react";
+import Trash from "../../../../assets/Trash.svg";
 
 export default function Card({ card, onCardClick, onCardDelete, onCardLike }) {
   const { name, link, isLiked } = card;
 
   // Evita pasar src vacío
-  const cardLink = link || null;
+  const cardLink = link || "";
 
   return (
     <div className="card">
@@ -23,7 +22,7 @@ export default function Card({ card, onCardClick, onCardDelete, onCardLike }) {
         type="button"
         aria-label="Delete card"
         style={{ backgroundImage: `url(${Trash})` }}
-        onClick={() => onCardDelete(card)} // ✅ ahora viene como prop
+        onClick={() => onCardDelete(card)}
       ></button>
 
       <h2 className="card__title">{name}</h2>

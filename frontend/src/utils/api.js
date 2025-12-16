@@ -1,5 +1,3 @@
-// frontend/src/utils/api.js
-
 class Api {
   constructor({ baseUrl }) {
     this._baseUrl = baseUrl;
@@ -20,14 +18,14 @@ class Api {
       method,
       headers: this._getHeaders(),
       body: body ? JSON.stringify(body) : undefined,
-      credentials: "include", // importante si se usan cookies
+      credentials: "include",
     }).then((res) => {
       if (res.ok) return res.json();
       return Promise.reject(`Error: ${res.status}`);
     });
   }
 
-  // ---------------- Métodos de usuarios ----------------
+  // ---------------- Usuarios ----------------
   getUserInfo() {
     return this.makeRequest("/users/me", "GET");
   }
@@ -37,10 +35,12 @@ class Api {
   }
 
   updateAvatar(avatarUrl) {
-    return this.makeRequest("/users/me/avatar", "PATCH", { avatar: avatarUrl });
+    return this.makeRequest("/users/me/avatar", "PATCH", {
+      avatar: avatarUrl,
+    });
   }
 
-  // ---------------- Métodos de tarjetas ----------------
+  // ---------------- Tarjetas ----------------
   getInitialCards() {
     return this.makeRequest("/cards", "GET");
   }
@@ -62,9 +62,9 @@ class Api {
   }
 }
 
-// 🔹 Configuración del backend remoto
+// 🔹 Backend en Google Cloud
 const api = new Api({
-  baseUrl: "http://34.121.100.25/api", // apunta a tu backend remoto
+  baseUrl: "http://34.121.100.25:3000",
 });
 
 export default api;
