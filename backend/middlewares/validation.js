@@ -1,7 +1,7 @@
 const { celebrate, Joi, Segments } = require("celebrate");
 const validator = require("validator");
 
-// Validación personalizada para URL
+// ------------------ Validación personalizada para URL ------------------
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
     return value;
@@ -9,7 +9,7 @@ const validateURL = (value, helpers) => {
   return helpers.error("string.uri");
 };
 
-// Validación para crear usuario
+// ------------------ Crear usuario ------------------
 const validateCreateUser = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -20,15 +20,15 @@ const validateCreateUser = celebrate({
   }),
 });
 
-// Validación para login
+// ------------------ Login ------------------
 const validateLogin = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    email: Joi.string().required().email(),
+    email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 });
 
-// Validación de actualización de perfil
+// ------------------ Actualizar perfil ------------------
 const validateUpdateProfile = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
@@ -36,27 +36,27 @@ const validateUpdateProfile = celebrate({
   }),
 });
 
-// Validación de avatar
+// ------------------ Actualizar avatar ------------------
 const validateUpdateAvatar = celebrate({
   [Segments.BODY]: Joi.object().keys({
     avatar: Joi.string().required().custom(validateURL),
   }),
 });
 
-// Validación de creación de tarjeta
+// ------------------ Crear tarjeta ------------------
 const validateCreateCard = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
     link: Joi.string().required().custom(validateURL),
   }),
 });
 
-// Validación de ID por params
+// ------------------ Validar IDs ------------------
 const validateId = celebrate({
   [Segments.PARAMS]: Joi.object()
     .keys({
-      cardId: Joi.string().hex().length(24),
       userId: Joi.string().hex().length(24),
+      cardId: Joi.string().hex().length(24),
     })
     .unknown(true),
 });

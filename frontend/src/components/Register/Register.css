@@ -1,0 +1,168 @@
+/* ======== ESTILOS GENERALES ======== */
+.register {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #000;
+  color: #fff;
+  font-family: "Inter", Arial, sans-serif;
+  padding-top: 60px;
+  box-sizing: border-box;
+}
+
+/* ======== CONTENEDOR PRINCIPAL ======== */
+.register__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* ======== HEADER ======== */
+.register__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  height: 74px;
+  padding: 0 20px;
+  border-bottom: 2px solid rgba(228, 221, 221, 0.781);
+  box-sizing: border-box;
+}
+
+.register__logo {
+  height: 40px;
+  width: auto;
+}
+
+.register__header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ======== TÍTULO PRINCIPAL ======== */
+.register__title {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 50px 0 40px;
+  text-align: center;
+}
+
+/* ======== FORMULARIO ======== */
+.register__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 350px;
+  padding-top: 77px;
+}
+
+.register__input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  color: #fff;
+  padding: 10px 0;
+  margin-bottom: 25px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.register__input::placeholder {
+  color: #ccc;
+}
+
+/* ======== BOTÓN ======== */
+.register__button {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  border-radius: 2px;
+  height: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
+  transition: opacity 0.3s;
+  margin-top: 40px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.register__button:hover {
+  opacity: 0.8;
+}
+
+/* ======== TEXTO FINAL ======== */
+.register__text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.register__text a {
+  color: #fff;
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.register__text a:hover {
+  opacity: 0.8;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+  .register {
+    padding-top: 40px;
+  }
+
+  .register__header {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .register__header-title {
+    font-size: 14px;
+    padding-top: 8px;
+  }
+
+  .register__container {
+    max-width: 320px;
+  }
+
+  .register__title {
+    font-size: 20px;
+    margin: 30px 0;
+  }
+
+  .register__form {
+    max-width: 300px;
+  }
+
+  .register__button {
+    margin-top: 30px;
+  }
+}
+
+/* ======== AJUSTE GLOBAL ======== */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}

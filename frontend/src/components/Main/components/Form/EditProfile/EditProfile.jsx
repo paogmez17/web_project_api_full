@@ -1,25 +1,24 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import CurrentUserContext from "../../../../../contexts/CurrentUserContext";
 
-export default function EditProfile() {
-  const { currentUser, handleUpdateUser } = useContext(CurrentUserContext);
+export default function EditProfile({ onUpdate }) {
+  const { currentUser } = useContext(CurrentUserContext);
 
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [about, setAbout] = useState("");
 
-  // Cuando currentUser cambie, llenar las cajitas
+  // Cargar datos actuales del usuario en el formulario
   useEffect(() => {
-    setName(currentUser.name || "");
-    setDescription(currentUser.about || "");
+    if (currentUser) {
+      setName(currentUser.name || "");
+      setAbout(currentUser.about || "");
+    }
   }, [currentUser]);
 
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleDescriptionChange = (e) => setDescription(e.target.value);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleUpdateUser({ name, about: description }); // Llama a la función del contexto
-  };
+  function handleSubmit(e) {
+    e.preventDefault(); //
+    onUpdate({ name, about }); //
+  }
 
   return (
     <form className="popup__form" id="FormProfile" onSubmit={handleSubmit}>
@@ -33,7 +32,7 @@ export default function EditProfile() {
         maxLength="40"
         required
         value={name}
-        onChange={handleNameChange}
+        onChange={(e) => setName(e.target.value)}
       />
       <span className="popup__input_type_error" id="inputname-error"></span>
 
@@ -46,8 +45,8 @@ export default function EditProfile() {
         minLength="2"
         maxLength="200"
         required
-        value={description}
-        onChange={handleDescriptionChange}
+        value={about}
+        onChange={(e) => setAbout(e.target.value)}
       />
       <span
         className="popup__input_type_error"

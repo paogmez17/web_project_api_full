@@ -1,0 +1,40 @@
+.tooltip-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.tooltip-container {
+  background: white;
+  border-radius: 10px;
+  padding: 40px;
+  width: 280px;
+  text-align: center;
+  position: relative;
+}
+
+.tooltip-icon {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.tooltip-message {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+}
+
+.tooltip-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000;
+}

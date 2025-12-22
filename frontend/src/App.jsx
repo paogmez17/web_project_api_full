@@ -1,140 +1,129 @@
-import { useState, useEffect } from "react";
-import Header from "./components/Header/Header";
-import Main from "./components/Main/Main";
-import Footer from "./components/Footer/Footer";
+import { useEffect, useState } from "react";
 import api from "./utils/api";
 import * as auth from "./utils/auth";
 import CurrentUserContext from "./contexts/CurrentUserContext";
+
+import Main from "./components/Main/Main";
+import Footer from "./components/Footer/Footer";
+import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
+
 import EditProfile from "./components/Main/components/Form/EditProfile/EditProfile";
 import EditAvatar from "./components/Main/components/Form/EditAvatar/EditAvatar";
 import NewCard from "./components/Main/components/Form/NewCard/NewCard";
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("jwt"));
   const [loggedIn, setLoggedIn] = useState(false);
-  const [checkingToken, setCheckingToken] = useState(true);
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [popup, setPopup] = useState(null);
+  const [showLogin, setShowLogin] = useState(true);
 
-  // -------------------------
-  // Verificar token al cargar
-  // -------------------------
+  // ================= TOKEN CHECK =================
   useEffect(() => {
-    const jwt = localStorage.getItem("jwt");
-    if (!jwt) {
-      setCheckingToken(false);
-      return;
-    }
+    const token = localStorage.getItem("jwt");
+    if (!token) return;
 
     auth
-      .checkToken(jwt)
-      .then((userData) => {
-        setCurrentUser(userData);
+      .checkToken(token)
+      .then((user) => {
+        setCurrentUser(user);
         setLoggedIn(true);
         loadInitialData();
       })
-      .catch((err) => {
-        console.error("Token inválido:", err.message || err);
-        localStorage.removeItem("jwt");
-        setLoggedIn(false);
-      })
-      .finally(() => setCheckingToken(false));
+      .catch(() => localStorage.removeItem("jwt"));
   }, []);
 
-  // -------------------------
-  // Cargar usuario + tarjetas si hay login
-  // -------------------------
-  const loadInitialData = () => {
-    api
-      .getUserInfo()
-      .then((user) => setCurrentUser(user))
-      .catch((err) =>
-        console.error("Error cargando usuario:", err.message || err)
-      );
+  // ================= LOAD DATA =================
+  function loadInitialData() {
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([user, cards]) => {
+        setCurrentUser(user);
+        setCards(cards);
+      })
+      .catch(console.error);
+  }
 
-    api
-      .getInitialCards()
-      .then((cards) => setCards(cards))
-      .catch((err) =>
-        console.error("Error cargando tarjetas:", err.message || err)
-      );
-  };
+  // ================= USER =================
+  function handleUpdateUser(data) {
+    api.editUserInfo(data).then((user) => {
+      setCurrentUser(user);
+      setPopup(null);
+    });
+  }
 
-  // -------------------------
-  // Actualizar usuario
-  // -------------------------
-  const handleUpdateUser = (data) => {
+  function handleUpdateAvatar(data) {
+    api.updateAvatar(data.avatar).then((user) => {
+      setCurrentUser(user);
+      setPopup(null);
+    });
+  }
+
+  // ================= CARDS =================
+  function handleAddPlaceSubmit(data) {
     api
-      .editUserInfo(data)
-      .then((newUser) => {
-        setCurrentUser(newUser);
+      .addCard(data)
+      .then((newCard) => {
+        setCards((prev) => [newCard, ...prev]);
         setPopup(null);
       })
-      .catch((err) =>
-        console.error("Error actualizando usuario:", err.message || err)
+      .catch(console.error);
+  }
+
+  //  LIKE REAL (BACKEND)
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((id) => id === currentUser._id);
+
+    const request = isLiked ? api.removeLike(card._id) : api.addLike(card._id);
+
+    request.then((updatedCard) => {
+      setCards((state) =>
+        state.map((c) => (c._id === card._id ? updatedCard : c))
       );
-  };
+    });
+  }
 
-  // -------------------------
-  // Actualizar avatar
-  // -------------------------
-  const handleUpdateAvatar = (data) => {
-    api
-      .updateAvatar(data.avatar)
-      .then((newUser) => {
-        setCurrentUser(newUser);
-        setPopup(null);
-      })
-      .catch((err) =>
-        console.error("Error actualizando avatar:", err.message || err)
-      );
-  };
+  function handleCardDelete(card) {
+    api.deleteCard(card._id).then(() => {
+      setCards((state) => state.filter((c) => c._id !== card._id));
+    });
+  }
 
-  // -------------------------
-  // Card handlers
-  // -------------------------
-  const handleAddPlaceSubmit = (newCard) => {
-    setCards([newCard, ...cards]);
-  };
+  // ================= AUTH =================
+  function handleLogin(email, password) {
+    auth.authorize(email, password).then(({ token }) => {
+      localStorage.setItem("jwt", token);
+      setLoggedIn(true);
+      setShowLogin(false);
+      loadInitialData();
+    });
+  }
 
-  const handleCardLike = (cardToLike) => {
-    setCards(
-      cards.map((c) =>
-        c._id === cardToLike._id ? { ...c, isLiked: !c.isLiked } : c
-      )
-    );
-  };
+  function handleRegister(email, password) {
+    auth.register(email, password).then(() => setShowLogin(true));
+  }
 
-  const handleCardDelete = (cardToDelete) => {
-    setCards(cards.filter((c) => c._id !== cardToDelete._id));
-  };
-
-  // -------------------------
-  // Popups configurados
-  // -------------------------
+  // ================= POPUPS =================
   const popups = {
-    editProfilePopup: { title: "Edit profile", children: <EditProfile /> },
-    editAvatarPopup: { title: "Edit avatar", children: <EditAvatar /> },
-    newCardPopup: {
-      title: "New place",
+    editProfile: {
+      title: "Editar perfil",
+      children: <EditProfile onUpdate={handleUpdateUser} />,
+    },
+    editAvatar: {
+      title: "Cambiar avatar",
+      children: <EditAvatar onUpdate={handleUpdateAvatar} />,
+    },
+    newCard: {
+      title: "Nueva tarjeta",
       children: <NewCard onAddPlace={handleAddPlaceSubmit} />,
     },
   };
 
+  // ================= RENDER =================
   return (
-    <CurrentUserContext.Provider
-      value={{ currentUser, handleUpdateUser, handleUpdateAvatar }}
-    >
+    <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
-
-        {/* Mostrar carga mientras se valida token */}
-        {checkingToken ? (
-          <div style={{ textAlign: "center", padding: "2rem" }}>
-            Cargando...
-          </div>
-        ) : loggedIn ? (
+        {loggedIn ? (
           <Main
             cards={cards}
             onCardLike={handleCardLike}
@@ -144,10 +133,16 @@ function App() {
             popup={popup}
             popups={popups}
           />
+        ) : showLogin ? (
+          <Login
+            onLogin={handleLogin}
+            switchToRegister={() => setShowLogin(false)}
+          />
         ) : (
-          <div style={{ textAlign: "center", padding: "2rem" }}>
-            Por favor, inicia sesión para ver el contenido.
-          </div>
+          <Register
+            onRegister={handleRegister}
+            switchToLogin={() => setShowLogin(true)}
+          />
         )}
 
         <Footer />

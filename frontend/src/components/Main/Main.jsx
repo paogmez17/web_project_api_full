@@ -7,7 +7,7 @@ import { useState, useContext } from "react";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
 
 export default function Main({
-  cards,
+  cards = [],
   onCardLike,
   onCardDelete,
   onOpenPopup,
@@ -15,61 +15,62 @@ export default function Main({
   popup,
   popups,
 }) {
-  const { currentUser } = useContext(CurrentUserContext);
+  const currentUser = useContext(CurrentUserContext);
   const [selectedCard, setSelectedCard] = useState(null);
 
   const handleCardClick = (card) => setSelectedCard(card);
-  const handleCloseImagePopup = () => setSelectedCard(null);
 
   return (
     <main>
       <section className="profile">
         <div className="profile__content">
           <div className="profile__avatar-area">
-            <img
-              className="profile__picture"
-              src={currentUser.avatar || ""}
-              alt="perfil"
-            />
+            {currentUser?.avatar && (
+              <img
+                className="profile__picture"
+                src={currentUser.avatar}
+                alt="perfil"
+              />
+            )}
+
             <button
               type="button"
               className="profile__avatar-edit-button"
-              onClick={() => onOpenPopup(popups.editAvatarPopup)}
+              onClick={() => onOpenPopup(popups.editAvatar)}
             >
               <img src={editButton} alt="Editar avatar" />
             </button>
           </div>
+
           <div className="profile__info">
             <div className="profile__edit">
-              <h2 className="profile__info-name">{currentUser.name || ""}</h2>
+              <h2 className="profile__info-name">{currentUser?.name || ""}</h2>
+
               <button
                 className="profile__edit-button"
                 type="button"
-                onClick={() => onOpenPopup(popups.editProfilePopup)}
+                onClick={() => onOpenPopup(popups.editProfile)}
               >
-                <img src={editButton} alt="edit button" />
+                <img src={editButton} alt="Editar perfil" />
               </button>
             </div>
-            <h3 className="profile__info-career">{currentUser.about || ""}</h3>
+
+            <h3 className="profile__info-career">{currentUser?.about || ""}</h3>
           </div>
+
           <div className="profile__add">
             <button
-              aria-label="Add card"
               className="profile__add-button"
               type="button"
-              onClick={() => onOpenPopup(popups.newCardPopup)}
+              onClick={() => onOpenPopup(popups.newCard)}
             >
-              <img
-                src={addButton}
-                alt="add button"
-                className="profile__add-vector"
-              />
+              <img src={addButton} alt="add" />
             </button>
           </div>
         </div>
       </section>
 
-      <section className="elements" id="elements">
+      <section className="elements">
         {cards.map((card) => (
           <Card
             key={card._id}
@@ -88,11 +89,7 @@ export default function Main({
       )}
 
       {selectedCard && (
-        <ImagePopup
-          card={selectedCard}
-          onClose={handleCloseImagePopup}
-          isOpen={!!selectedCard}
-        />
+        <ImagePopup card={selectedCard} onClose={() => setSelectedCard(null)} />
       )}
     </main>
   );

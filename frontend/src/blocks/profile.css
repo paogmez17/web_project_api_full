@@ -2,6 +2,12 @@
   padding: 50px 173px 0px;
 }
 
+.profile__logo {
+  padding: 50px;
+  border-bottom: 2px solid rgba(228, 221, 221, 0.781);
+  margin-bottom: 26px;
+}
+
 .profile__info {
   padding-top: 50px;
   padding-left: 45px;

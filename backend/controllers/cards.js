@@ -1,24 +1,28 @@
 const Card = require("../models/card");
 
-// GET todas las tarjetas
-module.exports.getCards = (req, res) => {
+// ---------------- GET todas las tarjetas ----------------
+const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) =>
+      res.status(500).send({ message: "Error al obtener las tarjetas" })
+    );
 };
 
-// Crear tarjeta
-module.exports.createCard = (req, res) => {
+// ---------------- Crear tarjeta ----------------
+const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send(card))
-    .catch((err) => res.status(400).send({ message: err.message }));
+    .catch((err) =>
+      res.status(400).send({ message: "Error al crear la tarjeta" })
+    );
 };
 
-// Eliminar tarjeta
-module.exports.deleteCard = (req, res) => {
+// ---------------- Eliminar tarjeta ----------------
+const deleteCard = (req, res) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
@@ -36,20 +40,17 @@ module.exports.deleteCard = (req, res) => {
       }
 
       return Card.findByIdAndDelete(cardId).then(() =>
-        res.send({ message: "Tarjeta eliminada correctamente" })
+        res.send({ message: "Tarjeta eliminada" })
       );
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({ message: "ID inválida" });
-      }
       const status = err.statusCode || 500;
       res.status(status).send({ message: err.message });
     });
 };
 
-// LIKE
-module.exports.likeCard = (req, res) => {
+// ---------------- LIKE ----------------
+const likeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
@@ -63,11 +64,13 @@ module.exports.likeCard = (req, res) => {
       throw error;
     })
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() =>
+      res.status(500).send({ message: "Error al dar like a la tarjeta" })
+    );
 };
 
-// DISLIKE
-module.exports.dislikeCard = (req, res) => {
+// ---------------- DISLIKE ----------------
+const dislikeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
@@ -81,5 +84,15 @@ module.exports.dislikeCard = (req, res) => {
       throw error;
     })
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() =>
+      res.status(500).send({ message: "Error al quitar like a la tarjeta" })
+    );
+};
+
+module.exports = {
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
 };

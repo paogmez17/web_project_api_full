@@ -1,76 +1,50 @@
-// backend/app.js
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
-const { errors } = require("celebrate");
 const cors = require("cors");
 
-const { login, createUser } = require("./controllers/users");
 const usersRouter = require("./routers/users");
 const cardsRouter = require("./routers/cards");
+const { createUser, login } = require("./routers/auth");
+
 const auth = require("./middlewares/auth");
-const errorHandler = require("./middlewares/errorHandler");
-const {
-  validateLogin,
-  validateCreateUser,
-} = require("./middlewares/validation");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/aroundb";
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://34.121.100.25";
+const PORT = 3000;
+const MONGO_URL = "mongodb://127.0.0.1:27017/aroundb";
 
-// ---------------- Middleware JSON ----------------
-app.use(express.json());
-
-// ---------------- CORS ----------------
 app.use(
   cors({
-    origin: [FRONTEND_URL, "http://localhost:3000", "http://localhost:30000"],
+    origin: true,
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 
-// ---------------- Logger de solicitudes ----------------
+app.use(express.json());
 app.use(requestLogger);
 
-// ---------------- Rutas públicas ----------------
-app.post("/signup", validateCreateUser, createUser);
-app.post("/signin", validateLogin, login);
+// 🟢 RUTAS PÚBLICAS
+app.post("/signin", login);
+app.post("/signup", createUser);
 
-// ---------------- Middleware global de autorización ----------------
+// 🔐 AUTORIZACIÓN (todo lo que viene después)
 app.use(auth);
 
-// ---------------- Rutas protegidas ----------------
+// 🔒 RUTAS PROTEGIDAS
 app.use("/users", usersRouter);
 app.use("/cards", cardsRouter);
 
-// ---------------- Ruta no encontrada ----------------
-app.use((req, res) => {
-  res.status(404).json({ message: "Recurso solicitado no encontrado" });
-});
-
-// ---------------- Logger de errores ----------------
+// ❗ ERRORES
 app.use(errorLogger);
-
-// ---------------- Manejo de errores de Celebrate ----------------
-app.use(errors());
-
-// ---------------- Manejo centralizado de errores ----------------
 app.use(errorHandler);
 
-// ---------------- Conexión a MongoDB ----------------
 mongoose
   .connect(MONGO_URL)
   .then(() => {
-    console.log("✅ Conectado a MongoDB");
-    app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-    });
+    console.log("MongoDB conectado");
+    app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
   })
-  .catch((error) => {
-    console.error("❌ Error al conectar a MongoDB:", error);
-    process.exit(1);
-  });
+  .catch(console.error);

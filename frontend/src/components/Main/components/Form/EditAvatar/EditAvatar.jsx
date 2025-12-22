@@ -1,29 +1,35 @@
-import { useRef, useContext } from "react";
-import CurrentUserContext from "../../../../../contexts/CurrentUserContext";
+import { useState } from "react";
 
-export default function EditAvatar() {
-  const { handleUpdateAvatar } = useContext(CurrentUserContext);
-  const avatarRef = useRef();
+export default function EditAvatar({ onUpdate }) {
+  const [avatar, setAvatar] = useState("");
 
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    handleUpdateAvatar({ avatar: avatarRef.current.value });
-  };
+    onUpdate({ avatar });
+  }
 
   return (
-    <form className="popup__form" onSubmit={handleSubmit}>
-      <input
-        type="url"
-        placeholder="Avatar URL"
-        className="popup__input popup__input--avatar"
-        ref={avatarRef}
-        required
-      />
-      <span className="popup__input_type_error" id="avatar-error"></span>
-
-      <button className="popup__submit-button" type="submit">
-        Guardar
-      </button>
-    </form>
+    <div className="popup__container">
+      <form
+        className="popup__form"
+        name="avatar-form"
+        onSubmit={handleSubmit}
+        style={{ alignContent: "center" }}
+      >
+        <input
+          type="url"
+          name="avatar"
+          className="popup__input"
+          placeholder="Enlace de la imagen"
+          required
+          value={avatar}
+          onChange={(e) => setAvatar(e.target.value)}
+          style={{ alignContent: "center" }}
+        />
+        <button type="submit" className="popup__submit-button">
+          Guardar
+        </button>
+      </form>
+    </div>
   );
 }

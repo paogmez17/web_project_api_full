@@ -1,0 +1,168 @@
+/* ======== ESTILOS GENERALES ======== */
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #000;
+  color: #fff;
+  font-family: "Inter", Arial, sans-serif;
+  padding-top: 60px;
+  box-sizing: border-box;
+}
+
+/* ======== CONTENEDOR PRINCIPAL ======== */
+.login__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* ======== HEADER ======== */
+.login__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  height: 74px;
+  padding: 0 20px;
+  border-bottom: 2px solid rgba(228, 221, 221, 0.781);
+  box-sizing: border-box;
+}
+
+.login__logo {
+  height: 40px;
+  width: auto;
+}
+
+.login__header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ======== TÍTULO PRINCIPAL ======== */
+.login__title {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 50px 0 40px;
+  text-align: center;
+}
+
+/* ======== FORMULARIO ======== */
+.login__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 350px;
+  padding-top: 77px;
+}
+
+.login__input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  color: #fff;
+  padding: 10px 0;
+  margin-bottom: 25px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.login__input::placeholder {
+  color: #ccc;
+}
+
+/* ======== BOTÓN ======== */
+.login__button {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  border-radius: 2px;
+  height: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
+  transition: opacity 0.3s;
+  margin-top: 40px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.login__button:hover {
+  opacity: 0.8;
+}
+
+/* ======== TEXTO FINAL ======== */
+.login__text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.login__text a {
+  color: #fff;
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.login__text a:hover {
+  opacity: 0.8;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+  .login {
+    padding-top: 40px;
+  }
+
+  .login__header {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .login__header-title {
+    font-size: 14px;
+    padding-top: 8px;
+  }
+
+  .login__container {
+    max-width: 320px;
+  }
+
+  .login__title {
+    font-size: 20px;
+    margin: 30px 0;
+  }
+
+  .login__form {
+    max-width: 300px;
+  }
+
+  .login__button {
+    margin-top: 30px;
+  }
+}
+
+/* ======== AJUSTE GLOBAL ======== */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}

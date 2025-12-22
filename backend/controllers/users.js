@@ -2,125 +2,110 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const JWT_SECRET = "mi_secreto_para_sprint";
+const JWT_SECRET = "mi_secreto_para_sprint"; // tu clave secreta
 
-// ------------------ Crear usuario ------------------
-const createUser = async (req, res) => {
-  try {
-    const {
-      name = "Jacques Cousteau",
-      about = "Explorador",
-      avatar = "https://i.pravatar.cc/150?img=3",
-      email,
-      password,
-    } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email y contraseña son obligatorios" });
-    }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ message: "El email ya está registrado" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hashedPassword,
-    });
-
-    res.status(201).json({ _id: newUser._id, email: newUser.email });
-  } catch (err) {
-    console.error("Error en createUser:", err);
-    res.status(500).json({ message: "Error al crear usuario" });
-  }
+// -------------------- GET USERS --------------------
+const getUsers = (req, res) => {
+  User.find({})
+    .then((users) => res.send(users))
+    .catch(() => res.status(500).send({ message: "Error del servidor" }));
 };
 
-// ------------------ Login ------------------
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email y contraseña son obligatorios" });
-    }
-
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Email o contraseña incorrectos" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(401)
-        .json({ message: "Email o contraseña incorrectos" });
-    }
-
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
-    res.json({ token });
-  } catch (err) {
-    console.error("Error en login:", err);
-    res.status(500).json({ message: "Error al iniciar sesión" });
-  }
+// -------------------- GET CURRENT USER --------------------
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => res.send(user))
+    .catch(() => res.status(500).send({ message: "Error del servidor" }));
 };
 
-// ------------------ Obtener todos los usuarios ------------------
-const getUsers = async (req, res) => {
-  try {
-    const users = await User.find({}, "_id name about avatar email");
-    res.json(users);
-  } catch (err) {
-    console.error("Error en getUsers:", err);
-    res.status(500).json({ message: "Error al obtener usuarios" });
-  }
+// -------------------- GET USER BY ID --------------------
+const getUserById = (req, res) => {
+  User.findById(req.params.userId)
+    .then((user) => res.send(user))
+    .catch(() => res.status(404).send({ message: "Usuario no encontrado" }));
 };
 
-// ------------------ Obtener usuario por ID ------------------
-const getUserById = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const user = await User.findById(userId, "_id name about avatar email");
-    if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-    res.json(user);
-  } catch (err) {
-    console.error("Error en getUserById:", err);
-    res.status(500).json({ message: "Error al obtener usuario" });
-  }
+// -------------------- UPDATE PROFILE --------------------
+const updateProfile = (req, res) => {
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true }
+  )
+    .then((user) => res.send(user))
+    .catch(() => res.status(400).send({ message: "Datos inválidos" }));
 };
 
-// ------------------ Obtener datos del usuario actual ------------------
-const getCurrentUser = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const user = await User.findById(userId, "_id name about avatar email");
-    if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-    res.json(user);
-  } catch (err) {
-    console.error("Error en getCurrentUser:", err);
-    res.status(500).json({ message: "Error al obtener datos del usuario" });
-  }
+// -------------------- UPDATE AVATAR --------------------
+const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    { new: true, runValidators: true }
+  )
+    .then((user) => res.send(user))
+    .catch(() => res.status(400).send({ message: "Avatar inválido" }));
+};
+
+// -------------------- REGISTER --------------------
+const register = (req, res) => {
+  const { email, password } = req.body;
+
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      return User.create({ email, password: hash });
+    })
+    .then((user) => {
+      res
+        .status(201)
+        .send({
+          message: "Usuario creado",
+          user: { email: user.email, _id: user._id },
+        });
+    })
+    .catch(() => res.status(500).send({ message: "Error creando usuario" }));
+};
+
+// -------------------- LOGIN --------------------
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(401)
+          .send({ message: "Usuario o contraseña incorrecta" });
+      }
+
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          return res
+            .status(401)
+            .send({ message: "Usuario o contraseña incorrecta" });
+        }
+
+        // Generar token
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+          expiresIn: "7d",
+        });
+        res.send({ token, user: { email: user.email, _id: user._id } });
+      });
+    })
+    .catch(() => res.status(500).send({ message: "Error del servidor" }));
 };
 
 module.exports = {
-  createUser,
-  login,
   getUsers,
   getUserById,
   getCurrentUser,
+  updateProfile,
+  updateAvatar,
+  register,
+  login,
 };

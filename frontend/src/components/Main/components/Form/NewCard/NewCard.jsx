@@ -1,41 +1,44 @@
 import { useState } from "react";
-import api from "../../../../../utils/api";
 
 export default function NewCard({ onAddPlace }) {
   const [name, setName] = useState("");
   const [link, setLink] = useState("");
 
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    api
-      .addNewCard({ name, link })
-      .then((newCard) => {
-        onAddPlace(newCard); // actualiza estado en App
-      })
-      .catch((err) => console.error(err));
-  };
+
+    onAddPlace({
+      name,
+      link,
+    });
+  }
 
   return (
-    <form className="popup__form" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Nombre"
-        className="popup__input"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <input
-        type="url"
-        placeholder="Enlace imagen"
-        className="popup__input"
-        value={link}
-        onChange={(e) => setLink(e.target.value)}
-        required
-      />
-      <button type="submit" className="popup__submit-button">
-        Crear
-      </button>
-    </form>
+    <div className="popup__container">
+      <form className="popup__form" onSubmit={handleSubmit}>
+        <input
+          className="popup__input"
+          maxLength="30"
+          minLength="1"
+          placeholder="Título"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <input
+          className="popup__input"
+          placeholder="Enlace de la imagen"
+          required
+          type="url"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+        />
+
+        <button className="popup__submit-button" type="submit">
+          Guardar
+        </button>
+      </form>
+    </div>
   );
 }

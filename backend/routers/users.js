@@ -1,18 +1,26 @@
-const express = require("express");
-const router = express.Router();
-const auth = require("../middlewares/auth");
+const router = require("express").Router();
 
 const {
   getUsers,
   getUserById,
   getCurrentUser,
+  updateProfile,
+  updateAvatar,
 } = require("../controllers/users");
 
-const { validateId } = require("../middlewares/validation");
+const {
+  validateUpdateProfile,
+  validateUpdateAvatar,
+  validateId,
+} = require("../middlewares/validation");
 
-// Rutas protegidas
-router.get("/", auth, getUsers);
-router.get("/me", auth, getCurrentUser);
-router.get("/:userId", auth, validateId, getUserById);
+router.get("/", getUsers);
+
+router.get("/me", getCurrentUser);
+
+router.get("/:userId", validateId, getUserById);
+
+router.patch("/me", validateUpdateProfile, updateProfile);
+router.patch("/me/avatar", validateUpdateAvatar, updateAvatar);
 
 module.exports = router;
