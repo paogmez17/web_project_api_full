@@ -26,18 +26,24 @@ app.use(
 app.use(express.json());
 app.use(requestLogger);
 
-// 🟢 RUTAS PÚBLICAS
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("El servidor va a caer");
+  }, 0);
+});
+
+// RUTAS PÚBLICAS
 app.post("/signin", login);
 app.post("/signup", createUser);
 
-// 🔐 AUTORIZACIÓN (todo lo que viene después)
+//  AUTORIZACIÓN (todo lo que viene después)
 app.use(auth);
 
-// 🔒 RUTAS PROTEGIDAS
+// RUTAS PROTEGIDAS
 app.use("/users", usersRouter);
 app.use("/cards", cardsRouter);
 
-// ❗ ERRORES
+// ERRORES
 app.use(errorLogger);
 app.use(errorHandler);
 
